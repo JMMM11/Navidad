@@ -1,74 +1,90 @@
-function createChristmasTree() {
-  const treeContainer = document.getElementById("tree-3d")
+import * as THREE from "https://cdn.skypack.dev/three@0.132.2";
 
-  const star = document.createElement("div")
-  star.className = "star-top"
-  treeContainer.appendChild(star)
+const canvas = document.querySelector("canvas.webgl");
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050b15);
 
-  const wrapper = document.createElement("div")
-  wrapper.className = "tree-3d-wrapper"
-  treeContainer.appendChild(wrapper)
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(0, 2.5, 6);
+scene.add(camera);
 
-  const layers = 12
-  const pixelsPerLayer = 20
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  for (let layer = 0; layer < layers; layer++) {
-    const layerDiv = document.createElement("div")
-    layerDiv.className = "tree-layer"
+/* 🎄 PARAMETROS DEL ARBOL */
+const params = {
+  count: 80000,
+  height: 4,
+  radius: 2,
+  spin: 2.5,
+  randomness: 0.5,
+  size: 0.02
+};
 
-    const yPos = layer * 35
-    const radius = 15 + layer * 8
+const geometry = new THREE.BufferGeometry();
+const positions = new Float32Array(params.count * 3);
+const colors = new Float32Array(params.count * 3);
 
-    layerDiv.style.top = yPos + "px"
+const bottomColor = new THREE.Color("#0b3d1c");
+const topColor = new THREE.Color("#7CFF4D");
 
-    for (let i = 0; i < pixelsPerLayer; i++) {
-      const angle = (i / pixelsPerLayer) * Math.PI * 2
-      const x = Math.cos(angle) * radius
-      const z = Math.sin(angle) * radius
+for (let i = 0; i < params.count; i++) {
+  const i3 = i * 3;
 
-      const pixel = document.createElement("div")
-      pixel.className = "pixel"
+  // Altura (punta arriba)
+  const y = Math.random() * params.height;
 
-      const greenShade = Math.floor(100 + layer * 10)
-      const darkGreen = Math.floor(50 + layer * 5)
-      pixel.style.background = `linear-gradient(135deg, 
-        rgb(${darkGreen}, ${greenShade}, ${darkGreen}) 0%, 
-        rgb(${darkGreen - 20}, ${greenShade - 30}, ${darkGreen - 20}) 100%)`
+  // Cono real
+  const radius = (1 - y / params.height) * params.radius;
 
-      pixel.style.transform = `translateX(${x}px) translateZ(${z}px)`
+  const angle = Math.random() * Math.PI * 2 + y * params.spin;
 
-      layerDiv.appendChild(pixel)
-    }
+  const randomX = (Math.random() - 0.5) * params.randomness;
+  const randomZ = (Math.random() - 0.5) * params.randomness;
 
-    if (layer % 2 === 0 && layer > 1) {
-      const ornamentCount = 3 + Math.floor(Math.random() * 3)
-      for (let o = 0; o < ornamentCount; o++) {
-        const ornament = document.createElement("div")
-        ornament.className = "ornament"
+  positions[i3]     = Math.cos(angle) * radius + randomX;
+  positions[i3 + 1] = y;
+  positions[i3 + 2] = Math.sin(angle) * radius + randomZ;
 
-        const colors = ["#ff4444", "#ffd700", "#4444ff", "#44ff44", "#ff44ff", "#00ffff"]
-        ornament.style.background = colors[Math.floor(Math.random() * colors.length)]
-        ornament.style.color = ornament.style.background
+  // Color gradual
+  const mix = y / params.height;
+  const color = bottomColor.clone().lerp(topColor, mix);
 
-        const oAngle = (o / ornamentCount) * Math.PI * 2
-        const oX = Math.cos(oAngle) * (radius - 5)
-        const oZ = Math.sin(oAngle) * (radius - 5)
-
-        ornament.style.transform = `translateX(${oX}px) translateZ(${oZ}px)`
-        ornament.style.animationDelay = `${Math.random() * 2}s`
-
-        layerDiv.appendChild(ornament)
-      }
-    }
-
-    wrapper.appendChild(layerDiv)
-  }
-
-  const trunk = document.createElement("div")
-  trunk.className = "trunk"
-  treeContainer.appendChild(trunk)
+  colors[i3]     = color.r;
+  colors[i3 + 1] = color.g;
+  colors[i3 + 2] = color.b;
 }
 
-window.addEventListener("load", () => {
-  createChristmasTree()
-})
+geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+const material = new THREE.PointsMaterial({
+  size: params.size,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.95,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending
+});
+
+const tree = new THREE.Points(geometry, material);
+scene.add(tree);
+
+/* ⭐ ESTRELLA */
+const star = new THREE.Mesh(
+  new THREE.SphereGeometry(0.12, 16, 16),
+  new THREE.MeshBasicMaterial({ color: 0xffd700 })
+);
+star.position.y = params.height + 0.2;
+scene.add(star);
+
+/* 🎞️ ANIMACIÓN */
+const clock = new THREE.Clock();
+function animate() {
+  const t = clock.getElapsedTime();
+  tree.rotation.y = t * 0.15;
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();

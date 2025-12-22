@@ -152,7 +152,7 @@ body {
   top: -10px;
   color: #fff;
   font-size: 1em;
-  user-select: none;
+
   animation: fall linear infinite;
   opacity: 0.8;
 }
@@ -212,4 +212,13 @@ body {
   .tree-container {
     transform: scale(0.7);
   }
+}
+
+.footer-message {
+  animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
