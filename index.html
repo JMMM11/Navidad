@@ -6,21 +6,122 @@
     <title>Feliz Navidad</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="tree.css">
+    <style>
+        /* El canvas del árbol 3D (detrás de todo) */
+        canvas.webgl {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Detrás del contenido */
+            background: #050b15; /* Fondo oscuro */
+        }
+
+        /* Contenedor principal */
+        body {
+            margin: 0;
+            font-family: "Georgia", serif;
+            overflow-x: hidden;
+        }
+
+        /* Contenedor para el texto superior */
+        .top-text {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+            width: 100%;
+        }
+
+        /* Contenedor para el texto inferior */
+
+        /* Estilos para el título */
+        .main-title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            margin: 0;
+        }
+
+        /* Estilos para el subtítulo */
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: #f0f0f0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Estilos para el mensaje inferior */
+        .footer-message {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: #ffb6b9;
+            margin: 0;
+        }
+
+        /* Luces del borde */
+        .border-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20; /* Por encima del texto */
+        }
+
+        .border-light {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: borderLightBlink 2s ease-in-out infinite;
+        }
+
+        /* Animación de las luces */
+        @keyframes borderLightBlink {
+            0%, 100% { opacity: 1; box-shadow: 0 0 20px currentColor; }
+            50% { opacity: 0.4; box-shadow: 0 0 5px currentColor; }
+        }
+
+        /* Posiciones de las luces */
+        .border-light:nth-child(1) { top: 5%; left: 5%; background: #ff4444; animation-delay: 0s; }
+        .border-light:nth-child(2) { top: 5%; left: 50%; background: #ffd700; animation-delay: 0.4s; }
+        .border-light:nth-child(3) { top: 5%; right: 5%; background: #4444ff; animation-delay: 0.8s; }
+        .border-light:nth-child(4) { top: 50%; left: 5%; background: #44ff44; animation-delay: 1.2s; }
+        .border-light:nth-child(5) { top: 50%; right: 5%; background: #ff4444; animation-delay: 1.6s; }
+        .border-light:nth-child(6) { bottom: 5%; left: 5%; background: #ffd700; animation-delay: 0.2s; }
+        .border-light:nth-child(7) { bottom: 5%; left: 25%; background: #4444ff; animation-delay: 0.6s; }
+        .border-light:nth-child(8) { bottom: 5%; left: 50%; background: #44ff44; animation-delay: 1s; }
+        .border-light:nth-child(9) { bottom: 5%; right: 25%; background: #ff4444; animation-delay: 1.4s; }
+        .border-light:nth-child(10) { bottom: 5%; right: 5%; background: #ffd700; animation-delay: 0.3s; }
+
+        /* Contenedor para la nieve */
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+    </style>
 </head>
 <body>
-    <div id="snow-container"></div>
+    <!-- Canvas del árbol 3D -->
+    <canvas class="webgl"></canvas>
 
-    <div class="container">
+    <!-- Contenedor para el texto superior -->
+    <div class="top-text">
         <h1 class="main-title">Feliz Navidad</h1>
-        <p class="subtitle">Que esta Navidad llene tu hogar de alegría, paz y amor.</p>
-
-        <div class="tree-container">
-            <div id="tree-3d"></div>
-        </div>
-
-        <p class="footer-message">Que todos tus deseos se hagan realidad</p>
     </div>
 
+    <!-- Luces del borde -->
     <div class="border-lights">
         <div class="border-light"></div>
         <div class="border-light"></div>
@@ -34,7 +135,11 @@
         <div class="border-light"></div>
     </div>
 
-    <script src="tree.js"></script>
+    <!-- Contenedor para la nieve -->
+    <div id="snow-container"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="tree.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

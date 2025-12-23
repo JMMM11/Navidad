@@ -29,8 +29,12 @@ body {
   font-size: clamp(2.5rem, 8vw, 5rem);
   font-weight: bold;
   color: #ffd700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.5);
-  margin-bottom: 20px;
+  text-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.8),
+    0 0 40px rgba(255, 215, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.5);
+
+  transform: translateY(-100px); /* 🔼 🔽 mueve en Y */
   animation: fadeInDown 1.5s ease-out;
 }
 
